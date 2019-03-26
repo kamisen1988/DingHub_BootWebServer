@@ -1,0 +1,150 @@
+
+var ddtcOperlock = {
+    //websdk2bURL 是丁丁停车为合作伙伴（B端）提供的SDK服务接口
+    //和ddtcDingHub相关的默认地址为"http://182.92.99.168:18082/ddtcDingHub/"
+    //websdk2bURL : "http://localhost:18082/ddtcDingHub/"
+    websdk2bURL : "http://182.92.99.168:18082/ddtcDingHub/"
+}
+
+function htmlRequest(url) {
+    var date = new Date();
+    var hubMac = document.getElementById('hubMac').value;
+    var divMsg = document.getElementById("errMessageTxt");
+    if(hubMac==""||hubMac==null)
+    {
+        divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date) + ' Error> : ' + '请输入HubMac' + '</div>'
+    }
+    else if(hubMac.length!=14 || hubMac.indexOf('DZ')==-1)
+    {
+        divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date) + ' Error> : ' + 'HubMac格式有误' + '</div>'
+    }
+    else{
+        //先把url中的参数（不含toBToken）截出来发送到交互框上
+        var urlCommand = url.substring(url.lastIndexOf('/')+1, url.indexOf('toBtoken')-1)
+        divMsg.innerHTML += '<div style="color:green">' + util.getFormatDate(date) + ' Client> : ' + urlCommand + '</div>'
+
+        //再把url结果发送到交互框上
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function (data) {
+                divMsg.innerHTML += util.getFormatDate(date) + ' Reply> : ' + data.data + data.errMessage + '</div>'
+            },
+            error: function (data) {
+                divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date)
+                    + ' Error> : ' + data.data + data.errMessage + '</div>'
+            }
+        })
+    }
+}
+
+function sendNUSOper(hubMac,lockMac,toBtoken,operation) {
+    var url =  ddtcOperlock.websdk2bURL + "operNUSLock?hubMac="+hubMac+"&lockMac="+lockMac+"&operType="+operation+"&toBtoken="+toBtoken;
+    htmlRequest(url)
+}
+function findHubMacInfo(hubMac,toBtoken,oper) {
+    var url =  ddtcOperlock.websdk2bURL + "operNUSLockHubMac?hubMac="+hubMac+"&oper=search"+"&toBtoken="+toBtoken;
+    htmlRequest(url)
+}
+function getMessage(hubMac,toBtoken) {
+    var url =  ddtcOperlock.websdk2bURL + "getMessage?hubMac="+hubMac+"&toBtoken="+toBtoken;
+    htmlRequest(url)
+}
+function setTimer(timer,hubMac,toBtoken) {
+    var url =  ddtcOperlock.websdk2bURL + "setTimer?timer="+timer+"&hubMac="+hubMac+"&toBtoken="+toBtoken;
+    htmlRequest(url)
+}
+function hubOper(hubMac,operation,toBtoken) {
+    var url =  ddtcOperlock.websdk2bURL + "hubOper?hubMac=" + hubMac + "&operation=" + operation + "&toBtoken=" + toBtoken;
+    htmlRequest(url)
+}
+function breakAndReconnect(hubMac,break_time,operation,toBtoken) {
+    var url =  ddtcOperlock.websdk2bURL + "breakAndReconnect?hubMac="+hubMac+"&breaktime="+break_time+"&operation="+operation+"&toBtoken="+toBtoken;
+    htmlRequest(url)
+}
+function hubSend433(hubMac,cmd,operType,toBtoken) {
+    var url =  ddtcOperlock.websdk2bURL + "hubSend433?hubMac="+hubMac+"&cmd="+cmd+"&operType="+operType+"&toBtoken="+toBtoken;
+    htmlRequest(url)
+}
+
+function judgementForOffPowerAndSleep(hubMac,operation,break_time,toBtoken) {
+    var date = new Date();
+    var divMsg = document.getElementById("errMessageTxt");
+    divMsg.innerHTML += '<div style="color:green">' + util.getFormatDate(date) + ' Client> : ' + operation + '</div>'
+    if(break_time=='0') {
+        hubOper(hubMac,operation,toBtoken)
+    }
+    else if(break_time==""||break_time==null) {
+        divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date) +
+            ' Error> : ' + '请输入唤醒时间,若不需要唤醒,请输入0' + '</div>'
+    }
+    else{
+        breakAndReconnect(hubMac,break_time,operation,toBtoken)
+    }
+}
+
+//TODO 设置hub名称成功后，新放一个“刷新hub列表”的html按键，调用getHubMacName函数，刷新hub list
+function setHubMacName(hubMac,hubMacName,toBtoken) {
+    var url =  ddtcOperlock.websdk2bURL + "setHubMacName?hubMac="+hubMac+"&hubMacName="+hubMacName+"&toBtoken="+toBtoken;
+    htmlRequest(url);
+    getHubMacName();
+}
+
+//开启指定hub的noti，调用下面函数，带token发给websdk2b server
+function notiHub(hubMac){
+    var url =  ddtcOperlock.websdk2bURL + "notiHub?hubMac="+hubMac +"&toBtoken="+toBtoken;
+    htmlRequest(url);
+}
+//初始化hubmacName列表
+function getHubMacName() {
+    var date = new Date();
+    var divMsg = document.getElementById("errMessageTxt");
+    $.ajax({
+        type : "get",
+        url : ddtcOperlock.websdk2bURL + "getHubMacName?toBtoken="+document.getElementById('toBtoken').value,
+        success : function(data, status) {
+            console.log(data.data)
+            var temp = data.data.substring(0,data.data.length-1)
+            var arr = temp.split(",")
+            console.log(arr)
+            if(arr==''){
+                divMsg.innerHTML += '<div style="color:blue">' + util.getFormatDate(date) + ' Server> : ' + 'Hub列表为空' + '</div>'
+            }
+            else{
+                var i = 0
+                //页面首次加载后，option置空，将第一个hub信息填入
+                $("#select").empty();
+
+                //将hub列表放入下拉框
+                $.each(arr, function() {
+                    $("#select").append(  //此处向select中循环绑定数据
+                        "<option name="+i+">" + arr[i++]+ "</option>");
+                });
+
+                //将第一个hub信息填入
+                var options=$("#select option:selected")
+                var t = options.text()
+                var i = t.indexOf(":")
+                var j = t.lastIndexOf(":")          //为了适配M26_L3:DZD82C7D572F1A:off这样传回的格式
+                $("#hubMacName").val(t.substring(0,i))
+                $("#hubMac").val(t.substring(i+1,j))
+
+                //下拉列表改变后的逻辑
+                $("#select").on("change",function () {
+                    var options=$("#select option:selected")
+                    console.log(options.text())
+                    var t = options.text()
+                    var i = t.indexOf(":")
+                    var j = t.lastIndexOf(":")
+                    $("#hubMacName").val(t.substring(0,i))
+                    $("#hubMac").val(t.substring(i+1,j))
+                })
+                divMsg.innerHTML += '<div style="color:blue">' + util.getFormatDate(date) + ' Server> : ' + 'Hub列表加载完毕' + '</div>'
+            }
+        },
+        error: function (data) {
+            divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date)
+                + ' Error> : ' + data.data + data.errMessage + '</div>'
+        }
+    });
+}

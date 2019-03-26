@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+</head>
+<script th:src="@{/js/ddtcOperlock.js}"></script>
+<script th:src="@{/js/jquery.js}"></script>
+<script th:src="@{/js/util.js}"></script>
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+<body>
+<section class="content-wrap">
+    <div class="container">
+
+        <input id="toBtoken" hidden="hidden" value="" th:value="${toBtoken}"/>
+        <form method="get" action="login">
+            <button type="submit">退出登录</button>
+        </form>
+
+        <table class="table table-hover datatable">
+            <tr>
+                <td>
+                    HubMac名称
+                </td>
+                <td>
+                    <input type="text" value="" id="hubMacName"/>
+                </td>
+                <td>
+                    <button
+                            onclick="setHubMacName(document.getElementById('hubMac').value,document.getElementById('hubMacName').value,document.getElementById('toBtoken').value)">
+                        设置hubMac名称
+                    </button>
+                </td>
+
+                <td>
+                    <select id="select" >
+                        <!--<option value="-1">&#45;&#45;请选择&#45;&#45;</option>-->
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    HubMac
+                </td>
+                <td>
+                    <input type="text" value="" id="hubMac"/>
+                </td>
+                <td>
+                    <button
+                            onclick="findHubMacInfo(document.getElementById('hubMac').value,document.getElementById('toBtoken').value)">
+                        查询Hub各项信息
+                    </button>
+                </td>
+                <td>
+                    <button
+                            onclick="notiHub(document.getElementById('hubMac').value)">
+                        开启Hub通知
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    操作Hub
+                </td>
+                <td>
+                    <input type="text" value="" size="50" id="breaktime"/>
+                </td>
+                <td>
+                    <button
+                            onclick="breakAndReconnect(document.getElementById('hubMac').value,document.getElementById('breaktime').value,'WT',document.getElementById('toBtoken').value)">
+                        设置断网n秒后唤醒
+                    </button>
+                </td>
+                <td>
+                    <button
+                            onclick="hubOper(document.getElementById('hubMac').value,'hubReset',document.getElementById('toBtoken').value)">
+                        重启Hub
+                    </button>
+                    <button
+                            onclick="hubOper(document.getElementById('hubMac').value,'hubResmodule',document.getElementById('toBtoken').value)">
+                        重启设备
+                    </button>
+                    <button
+                            onclick="hubOper(document.getElementById('hubMac').value,'hubForceRestart',document.getElementById('toBtoken').value)">
+                        强制重启
+                    </button>
+                    <button
+                            onclick="judgementForOffPowerAndSleep(document.getElementById('hubMac').value,'hubPowerOff',document.getElementById('breaktime').value,document.getElementById('toBtoken').value)">
+                        设备断电
+                    </button>
+                    <button
+                            onclick="judgementForOffPowerAndSleep(document.getElementById('hubMac').value,'hubSetSleep',document.getElementById('breaktime').value,document.getElementById('toBtoken').value)">
+                        设备休眠
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    433_cmd
+                </td>
+                <td>
+                    <input type="text" value="" id="433_cmd" size="50"/>
+                </td>
+                <td>
+                    <button
+                            onclick="hubSend433(document.getElementById('hubMac').value,document.getElementById('433_cmd').value,'U',document.getElementById('toBtoken').value)">
+                        Hub发送433升起
+                    </button>
+                    <button
+                            onclick="hubSend433(document.getElementById('hubMac').value,document.getElementById('433_cmd').value,'D',document.getElementById('toBtoken').value)">
+                        Hub发送433降下
+                    </button>
+                </td>
+                <td>
+                    <button
+                            onclick="hubOper(document.getElementById('hubMac').value,'hubLearn433',document.getElementById('toBtoken').value)">
+                        Hub学习433
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    hub_cmd
+                </td>
+                <td>
+                    <input type="text" value="" id="hub_cmd" size="50"/>
+                </td>
+                <td>
+                    <button
+                            onclick="hubOper(document.getElementById('hubMac').value,document.getElementById('hub_cmd').value,document.getElementById('toBtoken').value)">
+                        发送cmd给Hub
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>lockId</td>
+                <td><input type="text" value="" id="lockMac"/></td>
+                <td>
+                    <button
+                            onclick="sendNUSOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value,document.getElementById('toBtoken').value,'conn')">
+                        连接
+                    </button>
+                    <button
+                            onclick="sendNUSOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value,document.getElementById('toBtoken').value,'rise')">
+                        升起
+                    </button>
+                    <button
+                            onclick="sendNUSOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value,document.getElementById('toBtoken').value,'drop')">
+                        降下
+                    </button>
+                    <button
+                            onclick="sendNUSOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value,document.getElementById('toBtoken').value,'auto')">
+                        降下（自动升起）
+                    </button>
+                    <button
+                            onclick="sendNUSOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value,document.getElementById('toBtoken').value,'read')">
+                        查询
+                    </button>
+                    <button
+                            onclick="sendNUSOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value,document.getElementById('toBtoken').value,'disc')">
+                        断开
+                    </button>
+                    <button
+                            onclick="sendNUSOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value,document.getElementById('toBtoken').value,'scan')">
+                        扫描
+                    </button>
+                </td>
+                <td>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    lock_cmd
+                </td>
+                <td>
+                    <input type="text" value="" id="lock_cmd" size="50"/>
+                </td>
+                <td>
+                    <button
+                    onclick="sendNUSOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value,document.getElementById('toBtoken').value,document.getElementById('lock_cmd').value)">
+                    发送桩锁互联指令
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    定时
+                </td>
+                <td>
+                    <input type="text" value="" id="timer" size="50"/>
+                </td>
+                <td>
+                    <button
+                            onclick="setTimer(document.getElementById('timer').value,document.getElementById('hubMac').value,document.getElementById('toBtoken').value)">
+                        设置定时器
+                    </button>
+                </td>
+            </tr>
+        </table>
+        <hr/>
+
+        指令框:
+        <div id="errMessageTxt" style="width:800px; height:500px; background: #eee; overflow:auto;"></div>
+
+
+        <script>
+            var toBtoken = document.getElementById('toBtoken').value
+            var date = new Date();
+            $(function wsConn() {
+                var ws = new WebSocket('ws://182.92.99.168:18082/ws?toBtoken=' + toBtoken);
+                //var ws = new WebSocket('ws://localhost:18082/ws?toBtoken=' + toBtoken);
+                var divMsg = document.getElementById("errMessageTxt");
+                ws.onmessage = function (message) {
+                    divMsg.innerHTML += '<div style="color:blue">' + util.getFormatDate(date) + ' Server> : ' + message.data + '</div>'
+                };
+                ws.onopen = function() {
+                    divMsg.innerHTML += '<div style="color:blue">' + util.getFormatDate(date) + ' Server> : ' + 'connection opened' + '</div>'
+                    console.log("connection opened");
+                };
+                ws.onclose = function() {
+                    divMsg.innerHTML += '<div style="color:blue">' + util.getFormatDate(date) + ' Server> : ' + 'connection closed' + '</div>'
+                    console.log("connection closed");
+                };
+                ws.onerror = function wserror(message) {
+                    divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date) + ' Error> : ' + 'error: ' + message + '</div>'
+                    console.log("error: " + message);
+                };
+            });
+        </script>
+
+        <script>
+            <!--初始化HubMacName列表-->
+            getHubMacName();
+        </script>
+        <script>
+            var hubMac = document.getElementById('hubMac').value
+        </script>
+    </div>
+</section>
+</body>
+</html>
