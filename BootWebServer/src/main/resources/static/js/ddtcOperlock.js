@@ -58,10 +58,6 @@ function hubOper(hubMac,operation,toBtoken) {
     var url =  ddtcOperlock.websdk2bURL + "hubOper?hubMac=" + hubMac + "&operation=" + operation + "&toBtoken=" + toBtoken;
     htmlRequest(url)
 }
-function breakAndReconnect(hubMac,break_time,operation,toBtoken) {
-    var url =  ddtcOperlock.websdk2bURL + "breakAndReconnect?hubMac="+hubMac+"&breaktime="+break_time+"&operation="+operation+"&toBtoken="+toBtoken;
-    htmlRequest(url)
-}
 function hubSend433(hubMac,cmd,operType,toBtoken) {
     var url =  ddtcOperlock.websdk2bURL + "hubSend433?hubMac="+hubMac+"&cmd="+cmd+"&operType="+operType+"&toBtoken="+toBtoken;
     htmlRequest(url)
@@ -76,10 +72,13 @@ function judgementForOffPowerAndSleep(hubMac,operation,break_time,toBtoken) {
     }
     else if(break_time==""||break_time==null) {
         divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date) +
-            ' Error> : ' + '请输入唤醒时间,若不需要唤醒,请输入0' + '</div>'
+            ' Error> : ' + '请输入6位唤醒时间,若不需要唤醒,请输入0' + '</div>'
     }
-    else{
-        breakAndReconnect(hubMac,break_time,operation,toBtoken)
+    else if(operation.indexOf("HUB_WT")>=0&&operation.length!==12) {
+        divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date) +
+            ' Error> : ' + '唤醒时间需要满6位数字，例如000030' + '</div>'
+    }else{
+        hubOper(hubMac,operation,toBtoken)
     }
 }
 
