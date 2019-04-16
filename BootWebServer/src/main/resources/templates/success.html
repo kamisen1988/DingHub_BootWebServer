@@ -79,7 +79,7 @@
                     </button>
                     <button
                             onclick="hubOper(document.getElementById('hubMac').value,'hubResmodule',document.getElementById('toBtoken').value)">
-                        重启设备
+                        重启sim卡模组
                     </button>
                     <button
                             onclick="hubOper(document.getElementById('hubMac').value,'hubForceRestart',document.getElementById('toBtoken').value)">
@@ -163,12 +163,23 @@
                         断开
                     </button>
                     <button
-                            onclick="sendNUSOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value,document.getElementById('toBtoken').value,'scan')">
-                        扫描
+                            onclick="hubOper(document.getElementById('hubMac').value,document.getElementById('lockMac').value+':LOCK_INFO',document.getElementById('toBtoken').value)">
+                        读广播
                     </button>
                 </td>
                 <td>
-
+                    <button
+                            onclick="hubOper(document.getElementById('hubMac').value,'DN000000000000:LOCK_SCAN',document.getElementById('toBtoken').value)">
+                        扫广播
+                    </button>
+                    <button
+                            onclick="sendNUSOper(document.getElementById('hubMac').value,'DN000000000000',document.getElementById('toBtoken').value,'scan')">
+                        开始监听
+                    </button>
+                    <button
+                            onclick="hubOper(document.getElementById('hubMac').value,'DN000000000000:LOCK_IGNO',document.getElementById('toBtoken').value)">
+                        停止监听
+                    </button>
                 </td>
             </tr>
 
@@ -210,23 +221,26 @@
 
         <script>
             var toBtoken = document.getElementById('toBtoken').value
-            var date = new Date();
             $(function wsConn() {
                 var ws = new WebSocket('ws://182.92.99.168:18082/ws?toBtoken=' + toBtoken);
                 //var ws = new WebSocket('ws://localhost:18082/ws?toBtoken=' + toBtoken);
                 var divMsg = document.getElementById("errMessageTxt");
                 ws.onmessage = function (message) {
+                    var date = new Date();
                     divMsg.innerHTML += '<div style="color:blue">' + util.getFormatDate(date) + ' Server> : ' + message.data + '</div>'
                 };
                 ws.onopen = function() {
+                    var date = new Date();
                     divMsg.innerHTML += '<div style="color:blue">' + util.getFormatDate(date) + ' Server> : ' + 'connection opened' + '</div>'
                     console.log("connection opened");
                 };
                 ws.onclose = function() {
+                    var date = new Date();
                     divMsg.innerHTML += '<div style="color:blue">' + util.getFormatDate(date) + ' Server> : ' + 'connection closed' + '</div>'
                     console.log("connection closed");
                 };
                 ws.onerror = function wserror(message) {
+                    var date = new Date();
                     divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date) + ' Error> : ' + 'error: ' + message + '</div>'
                     console.log("error: " + message);
                 };
