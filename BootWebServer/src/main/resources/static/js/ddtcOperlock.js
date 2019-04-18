@@ -89,6 +89,10 @@ function setHubMacName(hubMac,hubMacName,toBtoken) {
     getHubMacName();
 }
 
+function refreshHubMacName(hubMac,hubMacName,toBtoken) {
+    getHubMacName();
+}
+
 //开启指定hub的noti，调用下面函数，带token发给websdk2b server
 function notiHub(hubMac){
     var url =  ddtcOperlock.websdk2bURL + "notiHub?hubMac="+hubMac +"&toBtoken="+toBtoken;
