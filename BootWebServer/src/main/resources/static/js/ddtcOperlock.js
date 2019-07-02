@@ -151,3 +151,112 @@ function getHubMacName() {
         }
     });
 }
+
+//获取当前用户的推送URL
+function getUrl(){
+    $.ajax({
+        type: "get",
+        url: ddtcOperlock.websdk2bURL + "getUrl?toBtoken=" + document.getElementById('toBtoken').value,
+        success: function (data) {
+            if(data.errNo == 200){
+                $("#url").val(data.data)
+            }
+            else{
+                console.log(data.errMessage)
+            }
+        }
+    });
+}
+
+//设置当前用户的推送URL
+function setUrl(URL) {
+    $.ajax({
+        type: "get",
+        url: ddtcOperlock.websdk2bURL + "getUrl?toBtoken=" + document.getElementById('toBtoken').value,
+        success: function (data) {
+            if(data.data == "" || URL != data.data){
+                if(!data.data) {
+                    if (URL != ''){
+                        if(URL.substr(0, 4) != "http" || URL.substr(-1, 1) == "/"){
+                            alert('URL 的格式不正确！');
+                        }
+                        else{
+                            if (confirm('当前URL为空，确定要执行新增操作吗?')) {
+                                $.ajax({
+                                    type: "get",
+                                    url: ddtcOperlock.websdk2bURL + "saveUrl?toBtoken=" + document.getElementById('toBtoken').value + '&amp;url=' + URL,
+                                    success: function (data) {
+                                        if(data.errNo == 200){
+                                            alert("新增成功！")
+                                        }
+                                        else{
+                                            alert(data.errMessage)
+                                        }
+                                        return true;
+                                    }
+                                });
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                    }
+                    else {
+                        alert("当前URL为空，请重新设置URL！")
+                    }
+                }
+                else {
+                    if(!URL){
+                        if (confirm('输入的URL为空，确定要执行清空操作吗?')) {
+                            $.ajax({
+                                type: "get",
+                                url: ddtcOperlock.websdk2bURL + "deleteUrl?toBtoken=" + document.getElementById('toBtoken').value,
+                                success: function (data) {
+                                    $("#url").val("")
+                                    if(data.errNo == 200){
+                                        alert("删除成功！")
+                                    }
+                                    else{
+                                        alert(data.errMessage)
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                    else{
+                        if(URL.substr(0, 4) != "http" || URL.substr(-1, 1) == "/"){
+                            alert('URL 的格式不正确！');
+                        }
+                        else{
+                            if (confirm('当前URL不为空，确定要执行更新操作吗?')) {
+                                $.ajax({
+                                    type: "get",
+                                    url: ddtcOperlock.websdk2bURL + "updateUrl?toBtoken=" + document.getElementById('toBtoken').value + '&amp;url=' + URL,
+                                    success: function (data) {
+                                        if(data.errNo == 200){
+                                            alert("更新成功！")
+                                        }
+                                        else{
+                                            alert(data.errMessage)
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                    }
+
+                }
+            }
+            else{
+                alert("该URL已存在！")
+            }
+        }
+    })
+}
+

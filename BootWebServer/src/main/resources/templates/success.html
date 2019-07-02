@@ -8,7 +8,7 @@
 <script th:src="@{/js/jquery.js}"></script>
 <script th:src="@{/js/util.js}"></script>
 <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
-<body>
+<body onload="getUrl()">
 <section class="content-wrap">
     <div class="container">
 
@@ -216,6 +216,22 @@
                     </button>
                 </td>
             </tr>
+
+            <!--设置URL-->
+            <tr>
+                <td>
+                    推送URL
+                </td>
+                <td>
+                    <input type="text" value="" id="url" size="50"/>
+                </td>
+                <td>
+                    <button
+                            onclick ="setUrl(document.getElementById('url').value)">
+                        设置URL
+                    </button>
+                </td>
+            </tr>
         </table>
         <hr/>
 
@@ -254,6 +270,9 @@
         <script>
             <!--初始化HubMacName列表-->
             getHubMacName();
+        </script>
+        <script>
+            var URL = document.getElementById('url').value
         </script>
         <script>
             var hubMac = document.getElementById('hubMac').value
