@@ -14,7 +14,7 @@ function htmlRequest(url) {
     {
         divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date) + ' Error> : ' + '请输入HubMac' + '</div>'
     }
-    else if(hubMac.length!=14 || hubMac.indexOf('DZ')==-1)
+    else if((hubMac.length!=17 || hubMac.indexOf(':')==-1)&&(hubMac.length!=14 || hubMac.indexOf('DZ')==-1))
     {
         divMsg.innerHTML += '<div style="color:red">' + util.getFormatDate(date) + ' Error> : ' + 'HubMac格式有误' + '</div>'
     }
